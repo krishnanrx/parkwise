@@ -1,0 +1,60 @@
+models:
+  detector_pt: models/yolov8n_coco.pt  # Use lightweight nano model
+  detector_onnx: models/plate_yolov8.onnx
+  ocr_backend: easyocr  # easyocr | crnn
+  ocr_langs: [en]
+  ocr_pt: models/ocr_crnn.pth
+  ocr_onnx: models/ocr_crnn.onnx
+
+inference:
+  device: auto  # cuda | cpu | auto
+  conf_threshold: 0.4  # Lower threshold for better detection
+  iou_threshold: 0.5
+  max_det: 10  # Limit detections for speed
+  frame_skip: 3  # Process every 3rd frame for speed
+  input_size: 416  # Smaller input for speed
+  use_onnx: false  # Use PyTorch for now (faster setup)
+  detector_only: false
+  apply_clahe: true
+
+io:
+  # Single camera mode (legacy)
+  source: 1
+  
+  # Multi-camera mode (for entry/exit gates)
+  multi_camera: true  # Enable multi-camera mode
+  cameras:
+    in:  # Entry camera - Prama IP Camera (ONVIF mainStream)
+      # Using ONVIF-discovered RTSP URL (mainStream, Channel 101)
+      # For RTSP, use the main admin credentials (Digest auth):
+      # admin / Navacbe@2024  -> @ must be URL-encoded as %40
+      source: "rtsp://admin:admin%40123@192.168.1.108:554/cam/realmonitor?channel=1&subtype=1"
+      # If you want lower resolution (subStream), you can switch to:
+      # source: "rtsp://admin:Navacbe%402024@192.168.1.64:554/Streaming/Channels/102?transportmode=unicast&profile=Profile_2"
+      camera_type: "in"  # "in" for entry, "out" for exit
+      enabled: true
+    out:  # Exit camera - Disabled (no camera available)
+      source: ""  # No exit camera
+      camera_type: "out"
+      enabled: false  # Disable exit camera
+  
+  output_mode: both  # overlay | json | both
+  save_jsonl: logs/plates.jsonl
+  save_csv: logs/plates.csv
+
+# Firebase gate control
+firebase:
+  enabled: true  # Enable Firebase gate control
+  auto_close_delay: 10  # Auto-close gate after 5 seconds (0 to disable)
+
+postprocess:
+  enable_confusion_correction: true
+  min_len: 6
+  max_len: 12
+  regex_set: default
+
+server:
+  host: 0.0.0.0
+  port: 8000
+
+
