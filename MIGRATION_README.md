@@ -68,3 +68,5 @@ Additional recommendations
 Contact
 -------
 If you have questions or need help migrating your local branches, contact the repository owner or maintainers.
+
+See also: `CHANGELOG.md` for the exact commit mapping and a short changelog entry.
